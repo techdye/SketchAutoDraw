@@ -19,7 +19,7 @@ def _get_image_online(url: str) -> Image:
     return Image.open(BytesIO(response.content))
 
 
-def _resize(image: Image, pos1: list[int], pos2: list[int]):
+def _resize(image: Image, pos1: list[int], pos2: list[int]) -> Image:
     w = abs(pos1[0] - pos2[0])
     h = abs(pos1[1] - pos2[1])
 
@@ -27,9 +27,15 @@ def _resize(image: Image, pos1: list[int], pos2: list[int]):
     return image.resize((w, h))
 
 
+def _delete_alpha(image: Image) -> Image:
+    im_png = Image.new("RGB", image.size, (255, 0, 0))
+    im_png.paste(image, image)
+    return image
+
+
 if __name__ == "__main__":
     image = _get_image_online(url)
 
-    image = _resize(image, [-100, 100], [100, -100])
+    image = _delete_alpha(_resize(image, [-100, 100], [100, -100]))
 
     image.show()
