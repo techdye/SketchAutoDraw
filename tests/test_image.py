@@ -42,7 +42,7 @@ def test__resize_negative(image_online):
     assert h == 100
 
 
-def test__resize_inversed(image_online):
+def test__resize_reversed(image_online):
     image = backend.image._resize(image_online, [200, 200], [100, 100])
 
     w, h = image.size
