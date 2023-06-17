@@ -16,14 +16,8 @@ def _get_image_online(url: str) -> Image:
 
 
 def _resize(image: Image, pos1: list[int], pos2: list[int]):
-    print(abs(pos1[0] - pos2[0]))
-    print(abs(pos1[1] - pos2[1]))
-
     w = abs(pos1[0] - pos2[0])
     h = abs(pos1[1] - pos2[1])
-
-    print(w)
-    print(h)
 
     return image.resize((w, h))
 
