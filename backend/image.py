@@ -27,9 +27,12 @@ def _resize(image: Image, pos1: list[int], pos2: list[int]) -> Image:
     return image.resize((w, h))
 
 
-def _delete_alpha(image: Image) -> Image:
-    im_png = Image.new("RGB", image.size, (255, 0, 0))
-    im_png.paste(image, image)
+def _delete_alpha(image: Image, red: int = 255, green: int = 255, blue: int = 255) -> Image:
+    if len(image.split()) >= 4:
+        im = Image.new("RGB", image.size, (red, green, blue))
+
+        im.paste(image, image)
+        return im
     return image
 
 
