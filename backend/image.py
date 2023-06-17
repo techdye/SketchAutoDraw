@@ -23,9 +23,6 @@ def _resize(image: Image, pos1: list[int], pos2: list[int]):
     w = abs(pos1[0] - pos2[0])
     h = abs(pos1[1] - pos2[1])
 
-    print(w)
-    print(h)
-
     logging.debug(f"Resizing an image : {w}, {h}")
     return image.resize((w, h))
 
@@ -33,6 +30,6 @@ def _resize(image: Image, pos1: list[int], pos2: list[int]):
 if __name__ == "__main__":
     image = _get_image_online(url)
 
-    image = _resize(image, [-100, -100], [100, -100])
+    image = _resize(image, [-100, 100], [100, -100])
 
     image.show()
