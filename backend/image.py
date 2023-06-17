@@ -15,7 +15,22 @@ def _get_image_online(url: str) -> Image:
     return Image.open(BytesIO(response.content))
 
 
+def _resize(image: Image, pos1: list[int], pos2: list[int]):
+    print(abs(pos1[0] - pos2[0]))
+    print(abs(pos1[1] - pos2[1]))
+
+    w = abs(pos1[0] - pos2[0])
+    h = abs(pos1[1] - pos2[1])
+
+    print(w)
+    print(h)
+
+    return image.resize((w, h))
+
+
 if __name__ == "__main__":
-    image = _get_image_online(url).resize((256, 256))
+    image = _get_image_online(url)
+
+    image = _resize(image, [500, 100], [200, 800])
 
     image.show()
