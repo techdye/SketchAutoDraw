@@ -60,7 +60,6 @@ def _get_every_pixels(image: Image) -> list:
     for ph in range(h):
         pixel_list = [image.getpixel((pw, ph)) for pw in range(w)]
 
-        print(pixel_list)
         pixels_list.append(pixel_list)
 
     return pixels_list

@@ -7,17 +7,17 @@ import backend.image
 
 
 @pytest.fixture
-def image_online():
-    return backend.image._get_image_online("https://assets.stickpng.com/images/5848152fcef1014c0b5e4967.png")
-
-
-@pytest.fixture
 def image():
     return Image.open("image.jpeg")
 
 
-def test__get_image_online(image_online):
-    assert image_online
+@pytest.fixture
+def colors():
+    return Image.open("colors.png")
+
+
+def test__get_image_online():
+    assert backend.image._get_image_online("https://assets.stickpng.com/images/5848152fcef1014c0b5e4967.png")
 
 
 def test__get_image_online_missing_schema():
@@ -125,3 +125,9 @@ def test__pixelize__ten(image):
     w, h = image.size
 
     assert before_w // 10 == w and before_h // 10 == h
+
+
+def test__get_every_pixels(colors):
+    pixelsList = [[(0, 0, 0), (255, 43, 0)], [(135, 87, 50), (255, 98, 22)], [(255, 243, 0), (73, 255, 0)], [(0, 255, 255), (0, 177, 255)], [(98, 73, 237), (230, 67, 255)], [(255, 255, 255), (236, 236, 236)]]
+
+    assert pixelsList == backend.image._get_every_pixels(backend.image._delete_alpha(colors))
