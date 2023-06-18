@@ -4,7 +4,7 @@ from io import BytesIO
 
 import logging
 
-url: str = "https://images.unsplash.com/photo-1575936123452-b67c3203c357?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D&w=1000&q=80"
+url: str = "https://static.wikia.nocookie.net/among-us-wiki/images/4/43/Orange.png/revision/latest/thumbnail/width/360/height/360?cb=20211122214800"
 
 
 def _get_image_online(url: str) -> Image:
@@ -27,9 +27,9 @@ def _resize(image: Image, pos1: list[int], pos2: list[int]) -> Image:
     return image.resize((w, h))
 
 
-def _delete_alpha(image: Image, red: int = 255, green: int = 255, blue: int = 255) -> Image:
+def _delete_alpha(image: Image, color: tuple = (256, 256, 256)) -> Image:
     if len(image.split()) >= 4:
-        im = Image.new("RGB", image.size, (red, green, blue))
+        im = Image.new("RGB", image.size, color)
 
         im.paste(image, image)
         return im
