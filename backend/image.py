@@ -6,7 +6,6 @@ from io import BytesIO
 from pathlib import Path
 import json
 import logging
-from pprint import pprint
 
 import numpy as np
 
@@ -17,8 +16,8 @@ SETTINGS_FILE = Path(__file__).parents[1] / "data" / "settings.json"
 def _get_image_online(url: str) -> Image:
     """
     Getting an image online.
-    :param url: The url.
-    :return: Image.
+    :param url: The url
+    :return: The image
     """
     response = requests.get(url)
 
@@ -27,6 +26,13 @@ def _get_image_online(url: str) -> Image:
 
 
 def _resize(image: Image, pos1: list[int], pos2: list[int]) -> Image:
+    """
+    Resize an image with positions.
+    :param image: The image
+    :param pos1: Position 1
+    :param pos2: Position 2
+    :return: The image
+    """
     w = abs(pos1[0] - pos2[0])
     h = abs(pos1[1] - pos2[1])
 
@@ -35,6 +41,13 @@ def _resize(image: Image, pos1: list[int], pos2: list[int]) -> Image:
 
 
 def _delete_alpha(image: Image, color: tuple = (256, 256, 256)) -> Image:
+    """
+    Delete the alpha of the image
+    :param image: The image
+    :param color: The color behind
+    :return: The image without the alpha
+    """
+
     if len(image.split()) >= 4:
         logging.debug(f"Removing image alpha.")
 
@@ -46,12 +59,23 @@ def _delete_alpha(image: Image, color: tuple = (256, 256, 256)) -> Image:
 
 
 def _pixelize(image: Image, divider: int = 5):
+    """
+    Pixelize the image by using resizing it.
+    :param image: The image
+    :param divider: The size divider
+    :return: The same image that has been pixelized
+    """
     w, h = image.size
 
     return image.resize((w // divider, h // divider))
 
 
 def _get_every_pixels(image: Image) -> list:
+    """
+    Get every pixels.
+    :param image: The image
+    :return: List of every pixels
+    """
     pixels_list = []
     logging.debug("Getting pixels list.")
 
@@ -66,6 +90,12 @@ def _get_every_pixels(image: Image) -> list:
 
 
 def _get_nearest_pixel(pixel: tuple[int, int, int], pixels_near: list[tuple[int, int, int]]) -> tuple:
+    """
+    Get the nearest color in a list of pixels.
+    :param pixel: The pixel
+    :param pixels_near: The list of pixels
+    :return: The nearest pixel
+    """
     if len(pixel) != 3:
         return 255, 255, 255
 
@@ -82,6 +112,12 @@ def _get_nearest_pixel(pixel: tuple[int, int, int], pixels_near: list[tuple[int,
 
 
 def _get_nearest_pixels(pixels_list: list[list[tuple[int, int, int]]], pixels_near: list[tuple[int, int, int]]) -> list[list[tuple]]:
+    """
+    Get the nearest pixels using the _get_nearest_pixels function.
+    :param pixels_list: Pixel list
+    :param pixels_near: The list of the nearest pixels
+    :return: The nearest pixels
+    """
     pixels_nearest = []
 
     for pixels in pixels_list:
