@@ -1,10 +1,12 @@
 from PIL import Image
 import requests
 from io import BytesIO
-
+from pathlib import Path
+import json
 import logging
 
 url: str = "https://static.wikia.nocookie.net/among-us-wiki/images/4/43/Orange.png/revision/latest/thumbnail/width/360/height/360?cb=20211122214800"
+SETTINGS_FILE = Path(__file__).parents[1] / "data" / "settings.json"
 
 
 def _get_image_online(url: str) -> Image:
@@ -44,9 +46,33 @@ def _pixelize(image, divider: int = 5):
     return image.resize((w // divider, h // divider))
 
 
+def _get_every_pixels(image):
+    pixels_list = []
+    logging.debug("Getting pixels list.")
+
+    w, h = image.size
+
+    for ph in range(h):
+        pixel_list = [image.getpixel((pw, ph)) for pw in range(w)]
+
+        print(pixel_list)
+        pixels_list.append(pixel_list)
+
+    return pixels_list
+
+
 if __name__ == "__main__":
+    with open(SETTINGS_FILE, "r") as f:
+        settings = json.load(f)
+
+        pixels_near = [tuple(i) for i in settings["pixels"]]
+
+    print(pixels_near)
+
     image = _get_image_online(url)
 
-    image = _delete_alpha(_resize(image, [-100, 100], [100, -100]))
+    image = _delete_alpha(_pixelize(_resize(image, [-50, 50], [50, -50])))
+
+    print(_get_every_pixels(image))
 
     image.show()
