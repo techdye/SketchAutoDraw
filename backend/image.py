@@ -29,11 +29,19 @@ def _resize(image: Image, pos1: list[int], pos2: list[int]) -> Image:
 
 def _delete_alpha(image: Image, color: tuple = (256, 256, 256)) -> Image:
     if len(image.split()) >= 4:
+        logging.debug(f"Removing image alpha.")
+
         im = Image.new("RGB", image.size, color)
 
         im.paste(image, image)
         return im
     return image
+
+
+def _pixelize(image, divider: int = 5):
+    w, h = image.size
+
+    return image.resize((w // divider, h // divider))
 
 
 if __name__ == "__main__":

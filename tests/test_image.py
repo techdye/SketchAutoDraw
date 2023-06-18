@@ -13,7 +13,7 @@ def image_online():
 
 @pytest.fixture
 def image():
-    return Image.open("photo.jpeg")
+    return Image.open("image.jpeg")
 
 
 def test__get_image_online(image_online):
@@ -105,3 +105,23 @@ def test__delete_alpha_black(image):
         assert True
     else:
         assert False
+
+
+def test__pixelize(image):
+    before_w, before_h = image.size
+
+    image = backend.image._pixelize(image)
+
+    w, h = image.size
+
+    assert before_w // 5 == w and before_h // 5 == h
+
+
+def test__pixelize__ten(image):
+    before_w, before_h = image.size
+
+    image = backend.image._pixelize(image, 10)
+
+    w, h = image.size
+
+    assert before_w // 10 == w and before_h // 10 == h
