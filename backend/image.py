@@ -8,7 +8,6 @@ import logging
 import numpy as np
 
 url: str = "https://static.wikia.nocookie.net/among-us-wiki/images/4/43/Orange.png/revision/latest/thumbnail/width/360/height/360?cb=20211122214800"
-SETTINGS_FILE = Path(__file__).parents[1] / "data" / "settings.json"
 
 
 def _get_image_online(url: str) -> Image:
@@ -130,6 +129,8 @@ def _get_nearest_pixels(pixels_list: list[list[tuple[int, int, int]]], pixels_ne
 
 
 if __name__ == "__main__":
+    SETTINGS_FILE = Path(__file__).parents[1] / "data" / "settings.json"
+
     with open(SETTINGS_FILE, "r") as f:
         settings = json.load(f)
 
@@ -138,3 +139,8 @@ if __name__ == "__main__":
     image = _get_image_online(url)
 
     image = _delete_alpha(_pixelize(_resize(image, [-50, 50], [50, -50])))
+
+    image = _get_nearest_pixels(_get_every_pixels(image), pixels_near)
+
+    print(image)
+
