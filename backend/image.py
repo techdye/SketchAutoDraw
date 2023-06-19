@@ -1,5 +1,3 @@
-from typing import Tuple, Any, List
-
 from PIL import Image
 import requests
 from io import BytesIO
