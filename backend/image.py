@@ -7,9 +7,6 @@ import logging
 
 import numpy as np
 
-url: str = "https://static.wikia.nocookie.net/among-us-wiki/images/4/43/Orange.png/revision/latest/thumbnail/width/360/height/360?cb=20211122214800"
-
-
 def _get_image_online(url: str) -> Image:
     """
     Getting an image online.
@@ -22,7 +19,7 @@ def _get_image_online(url: str) -> Image:
     return Image.open(BytesIO(response.content))
 
 
-def _resize(image: Image, pos1: list[int], pos2: list[int]) -> Image:
+def _resize(image: Image, pos1: tuple[int, int], pos2: tuple[int, int]) -> Image:
     """
     Resize an image with positions.
     :param image: The image
@@ -128,19 +125,17 @@ def _get_nearest_pixels(pixels_list: list[list[tuple[int, int, int]]], pixels_ne
     return pixels_nearest
 
 
-if __name__ == "__main__":
-    SETTINGS_FILE = Path(__file__).parents[1] / "data" / "settings.json"
+def get_url_image_pixels(url: str, pixels_near: list, pos1: tuple[int, int], pos2: tuple[int, int], divider: int):
+    """
+    Get nearest pixels of a image with its url.
+    :param url: The url
+    :param pixels_near: The nearest pixels
+    :param pos1: Where it is placed
+    :param pos2: Where it finished
+    :return: A list of pixels
+    """
+    im = _get_image_online(url)
+    im = _delete_alpha(_pixelize(_resize(im, pos1, pos2), divider))
+    im = _get_nearest_pixels(_get_every_pixels(im), pixels_near)
 
-    with open(SETTINGS_FILE, "r") as f:
-        settings = json.load(f)
-
-        pixels_near = [tuple(i) for i in settings["pixels"]]
-
-    image = _get_image_online(url)
-
-    image = _delete_alpha(_pixelize(_resize(image, [-50, 50], [50, -50])))
-
-    image = _get_nearest_pixels(_get_every_pixels(image), pixels_near)
-
-    print(image)
-
+    return im
