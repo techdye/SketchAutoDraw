@@ -1,3 +1,6 @@
+import json
+from pathlib import Path
+
 from PIL import Image
 import PIL
 import pytest
@@ -14,6 +17,14 @@ def image():
 @pytest.fixture
 def colors():
     return Image.open("colors.png")
+
+
+@pytest.fixture
+def colors_near():
+    SETTINGS_FILE = Path(__file__).parents[1] / "data" / "settings.json"
+
+    with open(SETTINGS_FILE, "r") as f:
+        return [tuple(i) for i in json.load(f)["pixels"]]
 
 
 def test__get_image_online():
@@ -128,6 +139,61 @@ def test__pixelize__ten(image):
 
 
 def test__get_every_pixels(colors):
-    pixelsList = [[(0, 0, 0), (255, 43, 0)], [(135, 87, 50), (255, 98, 22)], [(255, 243, 0), (73, 255, 0)], [(0, 255, 255), (0, 177, 255)], [(98, 73, 237), (230, 67, 255)], [(255, 255, 255), (236, 236, 236)]]
+    pixelsList = [[(0, 0, 0), (255, 43, 0)], [(135, 87, 50), (255, 98, 22)], [(255, 243, 0), (73, 255, 0)],
+                  [(0, 255, 255), (0, 177, 255)], [(98, 73, 237), (230, 67, 255)], [(255, 255, 255), (236, 236, 236)]]
 
     assert pixelsList == backend.image._get_every_pixels(backend.image._delete_alpha(colors))
+
+
+def test__get_nearest_pixel_black(colors_near):
+    assert backend.image._get_nearest_pixel((0, 0, 0), colors_near) == (57, 57, 59)
+
+
+def test__get_nearest_pixel_red(colors_near):
+    assert backend.image._get_nearest_pixel((255, 0, 0), colors_near) == (255, 92, 87)
+
+
+def test__get_nearest_pixel_brown(colors_near):
+    assert backend.image._get_nearest_pixel((135, 87, 50), colors_near) == (160, 112, 74)
+
+
+def test__get_nearest_pixel_orange(colors_near):
+    assert backend.image._get_nearest_pixel((255, 98, 22), colors_near) == (255, 123, 60)
+
+
+def test__get_nearest_pixel_yellow(colors_near):
+    assert backend.image._get_nearest_pixel((255, 255, 0), colors_near) == (244, 236, 67)
+
+
+def test__get_nearest_pixel_green(colors_near):
+    assert backend.image._get_nearest_pixel((0, 255, 0), colors_near) == (89, 182, 52)
+
+
+def test__get_nearest_pixel_cyan(colors_near):
+    assert backend.image._get_nearest_pixel((0, 255, 255), colors_near) == (41, 211, 210)
+
+
+def test__get_nearest_pixel_blue(colors_near):
+    assert backend.image._get_nearest_pixel((0, 177, 255), colors_near) == (32, 161, 218)
+
+
+def test__get_nearest_pixel_purple(colors_near):
+    assert backend.image._get_nearest_pixel((39, 0, 255), colors_near) == (98, 73, 237)
+
+
+def test__get_nearest_pixel_pink(colors_near):
+    assert backend.image._get_nearest_pixel((230, 67, 255), colors_near) == (238, 126, 254)
+
+
+def test__get_nearest_pixel_white(colors_near):
+    assert backend.image._get_nearest_pixel((210, 210, 210), colors_near) == (255, 255, 255)
+
+
+def test__get_nearest_pixels(colors_near):
+    pixelsList = [[(0, 0, 0), (255, 43, 0)], [(135, 87, 50), (255, 98, 22)], [(255, 243, 0), (73, 255, 0)],
+                  [(0, 255, 255), (0, 177, 255)], [(98, 73, 237), (230, 67, 255)], [(255, 255, 255), (236, 236, 236)]]
+
+    newPixelsList = [[(57, 57, 59), (255, 92, 87)], [(160, 112, 74), (255, 123, 60)], [(244, 236, 67), (89, 182, 52)],
+                  [(41, 211, 210), (32, 161, 218)], [(98, 73, 237), (238, 126, 254)], [(255, 255, 255), (255, 255, 255)]]
+
+    assert backend.image._get_nearest_pixels(pixelsList, colors_near) == newPixelsList
