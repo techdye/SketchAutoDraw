@@ -1,9 +1,17 @@
+import logging
+
 import pyautogui
+from pynput.mouse import Listener
 
 
 def _mouse_click_position(*args: tuple[int, int]):
     for pos in args:
         pyautogui.click(button='left', x=pos[0], y=pos[1])
+
+
+def get_position_on_click(x, y, button, pressed) -> tuple[int, int]:
+    if pressed:
+        return x, y
 
 
 def _range_by_colors(colors: list[tuple[int, int, int]], values) -> list[list[tuple[int, int, int]]]:
@@ -52,12 +60,18 @@ def _draw_one_line(start_position: tuple[int, int], distance: int, values: list[
 
 
 def draw(start_position: tuple[int, int], distance: int, values,
-         positions_x: list, position_y: int, colors: list):
+         positions_x: list, position_y: int, colors: list) -> bool:
     position = start_position
     pixels = _range_by_colors_by_line(colors=colors,
                                       values=values)
 
-    for i in pixels:
-        _draw_one_line(position, distance, i, positions_x, position_y, colors)
+    try:
+        for i in pixels:
+            _draw_one_line(position, distance, i, positions_x, position_y, colors)
 
-        position = (position[0], position[1] + distance)
+            position = (position[0], position[1] + distance)
+    except:
+        logging.critical("Ejecting!")
+        return False
+
+    return True

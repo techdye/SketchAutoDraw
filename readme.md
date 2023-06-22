@@ -1,3 +1,7 @@
 ### To-Do :
-- Modifier la position de la souris pour dessigner
-    - dessiner couleur par couleur
+- À récupérer de l'utilisateur
+  - url (interface)
+  - pos1 image (interface) 
+  - pos2 image (interface)
+  - distance (interface)
+  - positions colors (interface)
