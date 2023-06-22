@@ -1,16 +1,46 @@
+import json
+from pathlib import Path
+from time import sleep
+
 from PySide6.QtCore import QSize, Qt
 from PySide6.QtGui import QIntValidator
 from PySide6.QtWidgets import QApplication, QWidget, QPushButton, QMainWindow, QLineEdit, QLabel
+from pynput.mouse import Listener
+
+import backend.image
+import backend.draw
+
+def _round_lists(array):
+    new_array = []
+
+    for i in array:
+        new_array.append(round(i))
+
+    if isinstance(array, list):
+        return new_array
+    return tuple(new_array)
 
 
 class Window(QMainWindow):
     def __init__(self, window_name):
         super().__init__()
 
+        self.url = ""
+        self.pos1 = ()
+        self.pos2 = ()
+        self.distance = 0
+        self.posx = []
+        self.posy = 0
+
+        self.pos_set = 0
+
+        self.listener = Listener()
+
         self.setWindowTitle(window_name)
         self.setFixedSize(QSize(400, 350))
 
         self.init_ui()
+        self.init_actions()
 
     def middle(self, pos, width):
         return pos - width // 2
@@ -62,7 +92,101 @@ class Window(QMainWindow):
         self.draw_button = QPushButton("Dessiner l'image", self)
         self.draw_button.setFixedWidth(250)
         self.draw_button.setFixedHeight(30)
-        self.draw_button.move(self.middle(200, self.color_button.size().width()), 300)
+        self.draw_button.move(self.middle(200, self.draw_button.size().width()), 300)
+
+    def init_actions(self):
+        self.pos1_button.clicked.connect(self.position_1)
+        self.pos2_button.clicked.connect(self.position_2)
+
+        self.color_button.clicked.connect(self.colors)
+
+        self.draw_button.clicked.connect(self.draw)
+
+    def set_position_one(self, x, y, button, pressed):
+        if pressed:
+            self.pos1 = x, y
+            self.listener.stop()
+            self.listener = Listener()
+
+    def set_position_two(self, x, y, button, pressed):
+        if pressed:
+            self.pos2 = x, y
+            self.listener.stop()
+            self.listener = Listener()
+
+    def position_1(self):
+        self.showMinimized()
+        self.listener = Listener(on_click=self.set_position_one)
+        self.listener.start()
+        self.listener.join()
+
+    def position_2(self):
+        self.showMinimized()
+        self.listener = Listener(on_click=self.set_position_two)
+        self.listener.start()
+        self.listener.join()
+
+    def set_colors(self, x, y, button, pressed):
+        if pressed:
+            self.posx.append(x)
+            self.pos_set += 1
+
+        if len(self.posx) >= 10:
+            self.posy = y
+
+            self.listener.stop()
+            self.listener = Listener()
+            self.pos_set = 0
+
+    def colors(self):
+        self.posx = []
+
+        self.showMinimized()
+        self.listener = Listener(on_click=self.set_colors)
+        self.listener.start()
+        self.listener.join()
+
+    def draw(self):
+        self.showMinimized()
+
+        self.url = self.url_edit.text()
+        try:
+            self.distance = int(self.distance_edit.text())
+        except:
+            self.distance = ""
+            self.distance_edit.setText(self.distance)
+
+        self.pos1 = _round_lists(self.pos1)
+        self.pos2 = _round_lists(self.pos2)
+        self.posx = _round_lists(self.posx)
+
+        print(self.pos1)
+        print(self.pos2)
+        print(self.posx)
+
+        if not (self.url and self.pos1 and self.pos2 and self.distance and self.posx and self.posy):
+            print("Pas toutes les valeurs.")
+            return
+
+        SETTINGS_FILE = Path(__file__).parents[0] / "data" / "settings.json"
+
+        with open(SETTINGS_FILE, "r") as f:
+            settings = json.load(f)
+
+            pixels_near = [tuple(i) for i in settings["pixels"]]
+
+        image_pixels = backend.image.get_url_image_pixels(self.url, pixels_near, self.pos1, self.pos2, self.distance)
+
+        sleep(2.5)
+
+        backend.draw.draw(
+            start_position=self.pos1,
+            distance=self.distance,
+            values=image_pixels,
+            positions_x=self.posx,
+            position_y=self.posy,
+            colors=pixels_near
+        )
 
 
 app = QApplication([])
