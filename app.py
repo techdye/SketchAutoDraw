@@ -188,6 +188,9 @@ class Window(QMainWindow):
 
         image_pixels = backend.image.get_url_image_pixels(self.url, pixels_near, self.pos1, self.pos2, self.distance)
 
+        if not image_pixels:
+            return
+
         sleep(2.5)
 
         backend.draw.draw(

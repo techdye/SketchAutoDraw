@@ -140,7 +140,12 @@ def get_url_image_pixels(url: str, pixels_near: list, pos1: tuple[int, int], pos
     logging.info(f"Getting nearest image pixels with the URL: '{url}'.")
     im = _get_image_online(url)
     im = _delete_alpha(_pixelize(_resize(im, pos1, pos2), divider))
-    im = _get_nearest_pixels(_get_every_pixels(im), pixels_near)
+
+    try:
+        im = _get_nearest_pixels(_get_every_pixels(im), pixels_near)
+    except TypeError as err:
+        logging.warning(f"An error was occurred : {err}")
+        return False
 
     logging.info(f"The pixels of the image are got.")
     return im
