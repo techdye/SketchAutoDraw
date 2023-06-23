@@ -1,20 +1,24 @@
 import logging
 
 import pyautogui
-from pynput.mouse import Listener
 
 
 def _mouse_click_position(*args: tuple[int, int]):
+    """
+    Click at positions.
+    :param args: The positions
+    """
     for pos in args:
         pyautogui.click(button='left', x=pos[0], y=pos[1])
 
 
-def get_position_on_click(x, y, button, pressed) -> tuple[int, int]:
-    if pressed:
-        return x, y
-
-
 def _range_by_colors(colors: list[tuple[int, int, int]], values) -> list[list[tuple[int, int, int]]]:
+    """
+    Range a line by colors.
+    :param colors: The nearest colors
+    :param values: The pixels
+    :return: The list
+    """
     colors_list = [[], [], [], [], [], [], [], [], [], []]
 
     for i in values:
@@ -31,11 +35,26 @@ def _range_by_colors(colors: list[tuple[int, int, int]], values) -> list[list[tu
 
 
 def _range_by_colors_by_line(colors: list[tuple[int, int, int]], values) -> list[list[list[tuple[int, int, int]]]]:
+    """
+    Range every lines by colors.
+    :param colors: The nearest colors
+    :param values: The pixels
+    :return: The list
+    """
     return [_range_by_colors(colors, i) for i in values]
 
 
 def _draw_one_line(start_position: tuple[int, int], distance: int, values: list[list[tuple[int, int, int]]],
                    positions_x: list, position_y: int, colors: list):
+    """
+    Draw one line of pixels.
+    :param start_position: The position to start drawing
+    :param distance: Distance between every pixels
+    :param values: The pixels
+    :param positions_x: The x positions of the colors
+    :param position_y: The y position of the colors
+    :param colors: The nearest colors
+    """
     position = start_position
     color = 0
 
@@ -61,6 +80,16 @@ def _draw_one_line(start_position: tuple[int, int], distance: int, values: list[
 
 def draw(start_position: tuple[int, int], distance: int, values,
          positions_x: list, position_y: int, colors: list) -> bool:
+    """
+        Draw every lines of pixels.
+        :param start_position: The position to start drawing
+        :param distance: Distance between every pixels
+        :param values: The pixels
+        :param positions_x: The x positions of the colors
+        :param position_y: The y position of the colors
+        :param colors: The nearest colors
+        :return If it worked
+        """
     position = start_position
     pixels = _range_by_colors_by_line(colors=colors,
                                       values=values)
@@ -70,7 +99,7 @@ def draw(start_position: tuple[int, int], distance: int, values,
             _draw_one_line(position, distance, i, positions_x, position_y, colors)
 
             position = (position[0], position[1] + distance)
-    except:
+    except :
         logging.critical("Ejecting!")
         return False
 
