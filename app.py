@@ -1,4 +1,5 @@
 import json
+import logging
 from pathlib import Path
 from time import sleep
 
@@ -9,6 +10,12 @@ from pynput.mouse import Listener
 
 import backend.image
 import backend.draw
+
+logging.basicConfig(format='[%(asctime)s] %(levelname)s - %(message)s',
+                    datefmt='%m/%d/%Y %I:%M:%S %p',
+                    filename='app.log',
+                    level=logging.DEBUG)
+
 
 def _round_lists(array):
     new_array = []
@@ -107,20 +114,24 @@ class Window(QMainWindow):
             self.pos1 = x, y
             self.listener.stop()
             self.listener = Listener()
+            logging.debug(f"Position one is x: {x}, y: {y}.")
 
     def set_position_two(self, x, y, button, pressed):
         if pressed:
             self.pos2 = x, y
             self.listener.stop()
             self.listener = Listener()
+            logging.debug(f"Position two is x: {x}, y: {y}.")
 
     def position_1(self):
+        logging.debug("Getting position one.")
         self.showMinimized()
         self.listener = Listener(on_click=self.set_position_one)
         self.listener.start()
         self.listener.join()
 
     def position_2(self):
+        logging.debug("Getting position two.")
         self.showMinimized()
         self.listener = Listener(on_click=self.set_position_two)
         self.listener.start()
@@ -128,11 +139,14 @@ class Window(QMainWindow):
 
     def set_colors(self, x, y, button, pressed):
         if pressed:
+            logging.debug(f"{len(self.posx)} color (x: {x}, y: {y}) position set.")
             self.posx.append(x)
             self.pos_set += 1
 
         if len(self.posx) >= 10:
             self.posy = y
+
+            logging.debug(f"Positions for colors are set.")
 
             self.listener.stop()
             self.listener = Listener()
@@ -140,6 +154,7 @@ class Window(QMainWindow):
 
     def colors(self):
         self.posx = []
+        logging.debug(f"Getting positions for the colors.")
 
         self.showMinimized()
         self.listener = Listener(on_click=self.set_colors)
@@ -147,12 +162,10 @@ class Window(QMainWindow):
         self.listener.join()
 
     def draw(self):
-        self.showMinimized()
-
         self.url = self.url_edit.text()
         try:
             self.distance = int(self.distance_edit.text())
-        except:
+        except ValueError:
             self.distance = ""
             self.distance_edit.setText(self.distance)
 
@@ -160,13 +173,11 @@ class Window(QMainWindow):
         self.pos2 = _round_lists(self.pos2)
         self.posx = _round_lists(self.posx)
 
-        print(self.pos1)
-        print(self.pos2)
-        print(self.posx)
-
         if not (self.url and self.pos1 and self.pos2 and self.distance and self.posx and self.posy):
-            print("Pas toutes les valeurs.")
+            logging.warning("Needs more value.")
             return
+
+        self.showMinimized()
 
         SETTINGS_FILE = Path(__file__).parents[0] / "data" / "settings.json"
 

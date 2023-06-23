@@ -114,6 +114,8 @@ def _get_nearest_pixels(pixels_list: list[list[tuple[int, int, int]]], pixels_ne
     """
     pixels_nearest = []
 
+    logging.debug("Getting nearest pixels.")
+
     for pixels in pixels_list:
         pixel_nearest = []
 
@@ -134,8 +136,11 @@ def get_url_image_pixels(url: str, pixels_near: list, pos1: tuple[int, int], pos
     :param pos2: Where it finished
     :return: A list of pixels
     """
+
+    logging.info(f"Getting nearest image pixels with the URL: '{url}'.")
     im = _get_image_online(url)
     im = _delete_alpha(_pixelize(_resize(im, pos1, pos2), divider))
     im = _get_nearest_pixels(_get_every_pixels(im), pixels_near)
 
+    logging.info(f"The pixels of the image are got.")
     return im

@@ -41,6 +41,9 @@ def _range_by_colors_by_line(colors: list[tuple[int, int, int]], values) -> list
     :param values: The pixels
     :return: The list
     """
+
+    logging.debug("Ranging colors by line.")
+
     return [_range_by_colors(colors, i) for i in values]
 
 
@@ -57,6 +60,8 @@ def _draw_one_line(start_position: tuple[int, int], distance: int, values: list[
     """
     position = start_position
     color = 0
+
+    logging.debug("Drawing one line.")
 
     for i in values:
         color += 1
@@ -81,18 +86,20 @@ def _draw_one_line(start_position: tuple[int, int], distance: int, values: list[
 def draw(start_position: tuple[int, int], distance: int, values,
          positions_x: list, position_y: int, colors: list) -> bool:
     """
-        Draw every lines of pixels.
-        :param start_position: The position to start drawing
-        :param distance: Distance between every pixels
-        :param values: The pixels
-        :param positions_x: The x positions of the colors
-        :param position_y: The y position of the colors
-        :param colors: The nearest colors
-        :return If it worked
-        """
+    Draw every lines of pixels.
+    :param start_position: The position to start drawing
+    :param distance: Distance between every pixels
+    :param values: The pixels
+    :param positions_x: The x positions of the colors
+    :param position_y: The y position of the colors
+    :param colors: The nearest colors
+    :return If it worked
+    """
     position = start_position
     pixels = _range_by_colors_by_line(colors=colors,
                                       values=values)
+
+    logging.info(f"Drawing {len([i for i in pixels])} lines.")
 
     try:
         for i in pixels:
