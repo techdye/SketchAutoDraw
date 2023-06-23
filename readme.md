@@ -2,7 +2,7 @@
 A app that draws for you!
 
 ### Requirements
-certifi==2023.5.7
+certifi==2023.5.7 \n
 charset-normalizer==3.1.0
 EasyProcess==1.1
 entrypoint2==1.1
